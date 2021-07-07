@@ -28,6 +28,7 @@ DOTFILES=(
     "src/.gf"
     "src/.zshrc"
     "src/.tmux*"
+    "src/.hushlogin"
 )
 for d in "${DOTFILES[@]}"; do
     mv "$d" ~/
