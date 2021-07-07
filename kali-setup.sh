@@ -26,18 +26,14 @@ echo "[[ Copy dotfiles ]]"
 DOTFILES=(
     "src/.gdbinit"
     "src/.gf"
+    "src/.zshrc"
     "src/.tmux*"
 )
 for d in "${DOTFILES[@]}"; do
     mv "$d" ~/
 done
+. ~/.zshrc
 sudo mv src/default_keyboard /etc/default/keyboard
-if grep -q "CUSTOM COMMANDS - trcm" ~/.zshrc; then
-    true
-else
-    cat src/.zshrc.append >> ~/.zshrc
-    . ~/.zshrc
-fi
 echo ""
 
 echo "[[ Install packages ]]"
