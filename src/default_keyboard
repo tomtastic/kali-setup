@@ -1,0 +1,10 @@
+# KEYBOARD CONFIGURATION FILE
+
+# Consult the keyboard(5) manual page.
+
+# Keyboard set for external Mac keyboard (A1843) - /etc/default/keyboard
+XKBMODEL="applealu_iso"
+XKBLAYOUT="gb"
+XKBVARIANT="basic"
+XKBOPTIONS="apple:badmap"
+BACKSPACE="guess"
