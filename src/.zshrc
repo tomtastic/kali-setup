@@ -275,7 +275,7 @@ USEFUL=(
     "/usr/lib/go/bin:$GOBIN"
     )
 for p in "${USEFUL[@]}"; do
-    if echo "$PATH" | grep -q "$p"; then
+    if echo "$PATH" | grep -Eq "[:]?$p[\/]?([:]|$)"; then
         true
     else
         export PATH="$PATH:$p"
