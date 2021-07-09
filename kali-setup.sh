@@ -1,7 +1,4 @@
 #!/bin/bash
-# scp Kali-setup git repo
-# $ scp leela:~/trcm/src/kali-setup/src kali:~/kali
-# Run : setup-kali.sh
 
 echo "[[ Init sudo ]]"
 rm -f ~/readme.md
@@ -32,7 +29,9 @@ DOTFILES=(
     "src/.hushlogin"
 )
 for d in "${DOTFILES[@]}"; do
-    mv -f "$d" ~/
+    # Weirdly, we have to hush this despite the -f
+    #     mv: cannot move 'src/.gf' to '/home/kali/.gf': Directory not empty
+    mv -f "$d" ~/ 2>/dev/null
 done
 # We have an Apple keyboard for better or worse...
 sudo mv -f src/default_keyboard /etc/default/keyboard
