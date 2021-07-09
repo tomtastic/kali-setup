@@ -30,6 +30,7 @@ function kali_setup() {
         "src/.gdbinit"
         "src/.gf"
         "src/.zshrc"
+        "src/.zprofile"
         "src/.hushlogin"
     )
     for d in "${DOTFILES[@]}"; do

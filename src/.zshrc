@@ -255,6 +255,30 @@ fi
 #
 ## CUSTOM COMMANDS - trcm
 
+function grab(){
+    if [[ -x /usr/bin/tmux ]] || [[ -x /usr/local/bin/tmux ]]; then
+        declare -A SESSIONS
+        while read -r; do
+            IFS=":" read -r id description <<< "$REPLY"
+            SESSIONS[$id]=$description
+        done 2>/dev/null <<<$(tmux ls 2>/dev/null)
+        if [[ "${#SESSIONS[@]}" -eq 1 ]]; then
+            # If there's only one element, join that session by it's id
+            tmux attach-sess -t "${(k)SESSIONS}";
+        elif [[ "${#SESSIONS[@]}" -gt 1 ]] && [[ -n "$1" ]]; then
+            tmux attach-sess -t "$1";
+        elif [[ "${#SESSIONS[@]}" -gt 1 ]] && [[ ! -n "$1" ]]; then
+            # Otherwise, prompt for the session name
+            echo "Which one?"
+            for key in "${(k)SESSIONS[@]}"; do
+                echo "${key}"
+            done
+        fi
+    else
+        false
+    fi
+}
+
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
