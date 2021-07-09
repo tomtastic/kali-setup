@@ -10,6 +10,5 @@ local$ ssh kali
 ```
 kali$ curl https://github.com/tomtastic/kali-setup/archive/refs/heads/main.zip -LO \
         && ln -sf . kali-setup-main \
-        && unzip -o main.zip; rm kali-setup-main main.zip 
-kali$ ./kali-setup.sh
+        && unzip -o main.zip; rm kali-setup-main main.zip; ./kali-setup.sh
 ```
