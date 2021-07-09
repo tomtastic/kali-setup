@@ -118,6 +118,8 @@ function kali_setup() {
     (cd src && git clone https://github.com/Neohapsis/creddump7.git)
     echo "[[ Github projects - xssmap ]]"
     (cd src && git clone https://github.com/Jewel591/xssmap.git)
+    echo "[[ Github projects - carlospolop - linPEAS.sh ]]"
+    (cd src && http -dF https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/blob/master/linPEAS/linpeas.sh)
     echo "[[ Github projects - Volatility ]]"
     # - Volatility (not v3) : eg. python vol.py -f <imagepath> windows.info
     (cd src && git clone https://github.com/volatilityfoundation/volatility.git)
