@@ -91,6 +91,8 @@ GO111MODULE=on go get -u -v github.com/lc/gau
 echo ""
 
 echo "[[ Github projects ]]"
+echo "[[ Github projects - GF - examples ]]"
+svn export --force https://github.com/tomnomnom/gf/trunk/examples ~/.gf
 echo "[[ Github projects - FZF ]]"
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf; ~/.fzf/install --completion --key-bindings --update-rc --no-bash --no-fish
 echo "[[ Github projects - TMUX ]]"
