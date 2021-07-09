@@ -71,7 +71,6 @@ stage1() {
     echo ""
 
     echo "[[ Python packages ]]"
-    unset PYTHONPATH
     # - Install pip for Python2
     #curl https://bootstrap.pypa.io/get-pip.py -o src/get-pip.py
     #python3 src/get-pip.py
@@ -120,6 +119,8 @@ stage1() {
     (cd src && git clone https://gitlab.com/tobiasholl/ldmalloc)
     echo "[[ Github projects - PWNDBG ]]"
     (cd src && git clone https://github.com/pwndbg/pwndbg; cd pwndbg && ./setup.sh --user)
+    # This installs enum34==1.10.0, which is broken, so reinstall a good version
+    python3 -m pip install --user enum34==1.1.8
     echo "[[ Github projects - Windows is strange ]]"
     curl https://raw.githubusercontent.com/imurasheen/Extract-PSImage/master/Extract-Invoke-PSImage.ps1 -o src/Extract-Invoke-PSImage.ps1
     echo "[[ Github projects - Malware analysis - Didier Stevens - oledump ]]"
