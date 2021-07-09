@@ -30,7 +30,6 @@ function kali_setup() {
         "src/.gdbinit"
         "src/.gf"
         "src/.zshrc"
-        "src/.tmux.conf"
         "src/.hushlogin"
     )
     for d in "${DOTFILES[@]}"; do
@@ -147,6 +146,7 @@ function kali_setup() {
     echo "[[ Handy symlinks ]]"
     ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
     ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
+    ln -s ~/.tmux/tmux.conf .tmux.conf
     echo ""
 
     echo "[[ Fix broken things ]]"
