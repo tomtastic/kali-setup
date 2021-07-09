@@ -123,7 +123,7 @@ stage1() {
     echo "[[ Github projects - Windows is strange ]]"
     curl https://raw.githubusercontent.com/imurasheen/Extract-PSImage/master/Extract-Invoke-PSImage.ps1 -o src/Extract-Invoke-PSImage.ps1
     echo "[[ Github projects - Malware analysis - Didier Stevens - oledump ]]"
-    (cd src && curl https://didierstevens.com/files/software/oledump_V0_0_60.zip -O && unzip oledump_V0_0_60.zip)
+    (cd src && curl https://didierstevens.com/files/software/oledump_V0_0_60.zip -O && unzip -f oledump_V0_0_60.zip)
     echo "[[ Github projects - Malware analysis - decalage2 - oletools ]]"
     python3 -m pip install --user -U https://github.com/decalage2/oletools/archive/master.zip
     echo ""
