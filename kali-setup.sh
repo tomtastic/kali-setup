@@ -169,7 +169,7 @@ stage2() {
 [[ "$1" == "--stage2" ]] && (stage2 >/tmp/stage2.out 2>&1 &)
 
 sleep 5
-if grep -q http /tmp/stage2.out; then
+if grep -q "Reading package lists..." /tmp/stage2.out; then
     echo "[[ Deferred tasks running in background (/tmp/stage2.out) ]]"
 else
     echo "!! Deferred tasks not running, probably sudo auth timeout exceeded !!"
