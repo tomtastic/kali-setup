@@ -113,6 +113,8 @@ stage1() {
     (cd src && git clone https://github.com/Ganapati/RsaCtfTool.git; cd RsaCtfTool && python3 -m pip install --user -r "requirements.txt")
     echo "[[ Github projects - stegseek ]]"
     (cd src && wget https://github.com/RickdeJager/stegseek/releases/download/v0.5/stegseek_0.5-1.deb && sudo apt -y install ./stegseek_0.5-1.deb)
+    echo "[[ Github projects - creddump7 ]]"
+    (cd src && git clone https://github.com/Neohapsis/creddump7.git)
     echo "[[ Github projects - Volatility ]]"
     # - Volatility (not v3) : eg. python vol.py -f <imagepath> windows.info
     (cd src && git clone https://github.com/volatilityfoundation/volatility.git)
