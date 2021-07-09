@@ -101,17 +101,19 @@ stage1() {
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf; ~/.fzf/install --completion --key-bindings --update-rc --no-bash --no-fish
     echo "[[ Github projects - TMUX ]]"
     (cd src && git clone https://github.com/samoshkin/tmux-config.git; ./tmux-config/install)
-    echo "[[ Github projects - RUSTSCAN ]]"
+    echo "[[ Github projects - Rustscan ]]"
     (cd src && curl -L https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb -O && sudo dpkg -i rustscan_2.0.1_amd64.deb)
-    echo "[[ Github projects - WEBSHELLS ]]"
+    echo "[[ Github projects - WebShells ]]"
     (cd src && git clone https://github.com/xl7dev/WebShell.git)
     echo "[[ Github projects - Sublist3r ]]"
     (cd src && git clone https://github.com/aboul3la/Sublist3r.git)
-    echo "[[ Github projects - RSACTFTOOL ]]"
+    echo "[[ Github projects - ropstar ]]"
+    (cd src && git clone https://github.com/xct/ropstar.git)
+    echo "[[ Github projects - RsaCtfTool ]]"
     (cd src && git clone https://github.com/Ganapati/RsaCtfTool.git; cd RsaCtfTool && python3 -m pip install --user -r "requirements.txt")
-    echo "[[ Github projects - STEGSEEK ]]"
+    echo "[[ Github projects - stegseek ]]"
     (cd src && wget https://github.com/RickdeJager/stegseek/releases/download/v0.5/stegseek_0.5-1.deb && sudo apt -y install ./stegseek_0.5-1.deb)
-    echo "[[ Github projects - VOLATILITY ]]"
+    echo "[[ Github projects - Volatility ]]"
     # - Volatility (not v3) : eg. python vol.py -f <imagepath> windows.info
     (cd src && git clone https://github.com/volatilityfoundation/volatility.git)
     # - Volatility (v3) : eg. python3 vol.py -f <imagepath> windows.info
@@ -119,7 +121,7 @@ stage1() {
     echo "[[ Github projects - TOBIAS HOLL tools (Team HXP) ]]"
     (cd src && git clone https://gitlab.com/tobiasholl/traceheap)
     (cd src && git clone https://gitlab.com/tobiasholl/ldmalloc)
-    echo "[[ Github projects - PWNDBG ]]"
+    echo "[[ Github projects - pwndbg ]]"
     (cd src && git clone https://github.com/pwndbg/pwndbg; cd pwndbg && ./setup.sh --user)
     # pwndbg installs enum34==1.10.0, which is broken, so reinstall a good version
     python3 -m pip install --user enum34==1.1.8
