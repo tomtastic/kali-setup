@@ -39,7 +39,7 @@ echo ""
 
 echo "[[ Install packages ]]"
 sudo apt update
-sudo apt -y install golang gobuster seclists jq tmux fonts-powerline aptitude evolution httpie console-data keyboard-configuration console-setup cargo libgmp3-dev libmpc-dev libssl-dev libreadline-dev libgdbm-dev powershell libgdiplus libc6-dev rlwrap nodejs npm redis-tools libmcrypt4 libmhash2
+sudo apt -y install golang gobuster seclists jq tmux fonts-powerline aptitude evolution httpie console-data keyboard-configuration console-setup cargo libgmp3-dev libmpc-dev libssl-dev libreadline-dev libgdbm-dev powershell libgdiplus libc6-dev rlwrap nodejs npm redis-tools libmcrypt4 libmhash2 steghide foremost libarchive-zip-perl libexempi-dev libexempi8 libimage-exiftool-perl libmime-charset-perl libposix-strptime-perl libsombok3 libunicode-linebreak-perl ack
 echo ""
 
 echo "[[ System packages ]]"
@@ -116,3 +116,7 @@ cd /tmp && rm -rf unstuff
 cd ~kali || exit
 echo ""
 
+echo "[[ Handy synlinks ]]"
+ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
+sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
+ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
