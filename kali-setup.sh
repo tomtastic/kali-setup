@@ -146,6 +146,10 @@ stage1() {
 stage2() {
     # These things take a long time (large downloads or compiling), so
     # we defer them to this stage and background them where possible
+
+    # Refresh our credential cache timeout for another 15mins
+    sudo -v
+
     echo "[[ Backgrounded : Installing larger packages ]]"
     sudo DEBIAN_FRONTEND=noninteractive apt install -y -q --no-install-recommends nodejs npm seclists
     sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
