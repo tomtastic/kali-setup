@@ -1,5 +1,8 @@
 #!/bin/bash
 
+KALI_TZ="Europe/London"
+
+
 [[ -n "$1" ]] && stage1
 [[ "$1" == "--stage2" ]] && stage2 && exit
 
@@ -17,6 +20,7 @@ stage1() {
     echo ""
 
     echo "[[ Start NTP service on boot ]]"
+    sudo timedatectl set-timezone "$KALI_TZ"
     sudo systemctl enable ntp; sudo systemctl start ntp
 
     echo "[[ Be in the home directory ]]"
