@@ -3,9 +3,6 @@
 KALI_TZ="Europe/London"
 
 
-[[ -n "$1" ]] && stage1
-[[ "$1" == "--stage2" ]] && stage2 && exit
-
 stage1() {
     echo "[[ Init sudo ]]"
     rm -f ~/readme.md
