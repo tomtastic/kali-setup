@@ -127,8 +127,6 @@ stage1() {
     (cd src && git clone https://gitlab.com/tobiasholl/ldmalloc)
     echo "[[ Github projects - pwndbg ]]"
     (cd src && git clone https://github.com/pwndbg/pwndbg; cd pwndbg && ./setup.sh --user)
-    # pwndbg installs enum34==1.10.0, which is broken, so reinstall a good version
-    python3 -m pip install --user enum34==1.1.8
     echo "[[ Github projects - Windows is strange ]]"
     curl https://raw.githubusercontent.com/imurasheen/Extract-PSImage/master/Extract-Invoke-PSImage.ps1 -o src/Extract-Invoke-PSImage.ps1
     echo "[[ Github projects - Malware analysis - Didier Stevens - oledump ]]"
@@ -148,6 +146,11 @@ stage1() {
     echo "[[ Handy symlinks ]]"
     ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
     ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
+    echo ""
+
+    echo "[[ Fix broken things ]]"
+    # pwndbg installs enum34==1.10.0, which is broken, so reinstall a good version
+    python3 -m pip install --user enum34==1.1.8
     echo ""
 }
 
