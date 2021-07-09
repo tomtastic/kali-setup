@@ -116,7 +116,7 @@ stage1() {
     echo "[[ Github projects - PWNDBG ]]"
     (cd src && git clone https://github.com/pwndbg/pwndbg; cd pwndbg && ./setup.sh --user)
     echo "[[ Github projects - Windows is strange ]]"
-    curl https://raw.githubusercontent.com/imurasheen/Extract-PSImage/master/Extract-Invoke-PSImage.ps1 -o src/win/Extract-Invoke-PSImage.ps1
+    curl https://raw.githubusercontent.com/imurasheen/Extract-PSImage/master/Extract-Invoke-PSImage.ps1 -o src/Extract-Invoke-PSImage.ps1
     echo "[[ Github projects - Malware analysis - Didier Stevens - oledump ]]"
     (cd src && curl https://didierstevens.com/files/software/oledump_V0_0_60.zip -O && unzip oledump_V0_0_60.zip)
     echo "[[ Github projects - Malware analysis - decalage2 - oletools ]]"
@@ -133,7 +133,6 @@ stage1() {
 
     echo "[[ Handy symlinks ]]"
     ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
-    sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
     ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
     echo ""
 
@@ -144,22 +143,24 @@ stage2() {
     # we defer them to this stage and background them where possible
     echo "[[ Backgrounded : Installing larger packages ]]"
     # shellcheck disable=SC2024
-    sudo DEBIAN_FRONTEND=noninteractive apt install -y -q --no-install-recommends nodejs npm seclists >/tmp/stage2.apt 2>&1
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y -q --no-install-recommends nodejs npm seclists
+    sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
     echo ""
 
     echo "[[ Backgrounded : Node packages - For Electron apps ]]"
     # shellcheck disable=SC2024
-    sudo npm install -g asar >/tmp/stage2.node 2>&1
+    sudo npm install -g asar
     # shellcheck disable=SC2024
-    sudo npm install -g redis-dump >>/tmp/stage2.node 2>&1
+    sudo npm install -g redis-dump
     echo ""
 
     echo "[[ Backgrounded : Rust packages ]]"
-    cargo install feroxbuster >/tmp/stage2.rust 2>&1
+    cargo install feroxbuster
     echo ""
 }
 
-# Now we kick off stage2 in the background...
-nohup "$0" --stage2 >/tmp/stage2 2>&1 &
-echo "[[ Done, login again pls ]]"
+stage1 && (stage2 >/tmp/stage2.out 2>&1 &)
+
+echo "[[ ... deferred tasks running in background (/tmp/stage2.out) ... ]]"
+echo "[[ Done, please login ]]"
 echo ""
