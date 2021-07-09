@@ -22,6 +22,7 @@ stage1() {
     echo "[[ Start NTP service on boot ]]"
     sudo timedatectl set-timezone "$KALI_TZ"
     sudo systemctl enable ntp; sudo systemctl start ntp
+    echo ""
 
     echo "[[ Be in the home directory ]]"
     cd ~kali || exit 1
@@ -70,15 +71,12 @@ stage1() {
     echo ""
 
     echo "[[ Python packages ]]"
-    # - Install pip for Python2
-    curl https://bootstrap.pypa.io/get-pip.py -o src/get-pip.py
-    python3 src/get-pip.py
-    # - Install pip modules for Python3
-    python3 -m pip install --user stegoveritas black xortool
-    # Fix enum34 ballsing things up by reverting to a non-bad version
     unset PYTHONPATH
-    python3 -m pip uninstall -y enum34
-    python3 -m pip install --user enum34==1.1.8
+    # - Install pip for Python2
+    #curl https://bootstrap.pypa.io/get-pip.py -o src/get-pip.py
+    #python3 src/get-pip.py
+    # - Install pip modules for Python3
+    python3 -m pip install --user stegoveritas black xortool enum34==1.1.8
     /home/kali/.local/bin/stegoveritas_install_deps
     echo ""
 
