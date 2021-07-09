@@ -83,12 +83,12 @@ stage1() {
 
     echo "[[ Golang packages ]]"
     # - For cindex, csearch, cgrep (http://swtch.com/~rsc/regexp/regexp4.html)
-    go get -u github.com/google/codesearch/cmd/cindex
-    go get -u github.com/google/codesearch/cmd/csearch
-    go get -u github.com/google/codesearch/cmd/cgrep
+    go get -u -v github.com/google/codesearch/cmd/cindex
+    go get -u -v github.com/google/codesearch/cmd/csearch
+    go get -u -v github.com/google/codesearch/cmd/cgrep
     # - nifty
-    go get -u github.com/ffuf/ffuf
-    go get -u github.com/tomnomnom/gf
+    go get -u -v github.com/ffuf/ffuf
+    go get -u -v github.com/tomnomnom/gf
     GO111MODULE=on go get -u -v github.com/lc/gau
     echo ""
 
