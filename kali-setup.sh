@@ -138,6 +138,5 @@ sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz 
 ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
 echo ""
 
-echo "[[ Reinitialise our ZSH environment ]]"
-zsh -l
+echo "[[ Done, login again pls ]]"
 echo ""
