@@ -1,7 +1,6 @@
 # kali setup...
 ```
-kali$ sudo systemctl enable ssh
-kali$ sudo systemctl start ssh
+kali$ sudo systemctl enable ssh; sudo systemctl start ssh
 ```
 ```
 local$ ssh-copy-id -i ~/.ssh/id_ed25519 kali@kali
