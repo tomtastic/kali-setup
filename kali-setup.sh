@@ -29,12 +29,10 @@ DOTFILES=(
     "src/.hushlogin"
 )
 for d in "${DOTFILES[@]}"; do
-    # Weirdly, we have to hush this despite the -f
-    #     mv: cannot move 'src/.gf' to '/home/kali/.gf': Directory not empty
-    mv -f "$d" ~/ 2>/dev/null
+    cp -fpR "$d" ~/ 2>/dev/null
 done
 # We have an Apple keyboard for better or worse...
-sudo mv -f src/default_keyboard /etc/default/keyboard
+sudo cp -f src/default_keyboard /etc/default/keyboard 2>/dev/null
 echo ""
 
 echo "[[ Install packages ]]"
@@ -94,7 +92,7 @@ echo ""
 
 echo "[[ Github projects ]]"
 # - FZF
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf; ~/.fzf/install
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf; ~/.fzf/install --completion --key-bindings --update-rc --no-bash --no-fish
 # - TMUX
 (cd src && git clone https://github.com/samoshkin/tmux-config.git; ./tmux-config/install)
 # - RUSTSCAN
