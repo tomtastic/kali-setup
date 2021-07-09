@@ -19,11 +19,6 @@ stage1() {
     fi
     echo ""
 
-    echo "[[ Start NTP service on boot ]]"
-    sudo timedatectl set-timezone "$KALI_TZ"
-    sudo systemctl enable ntp; sudo systemctl start ntp
-    echo ""
-
     echo "[[ Be in the home directory ]]"
     cd ~kali || exit 1
     echo ""
@@ -62,11 +57,15 @@ stage1() {
         rlwrap steghide tmux
     echo ""
 
-    echo "[[ System packages ]]"
-    sudo systemctl enable ssh.service
+    # Refresh our credential cache timeout for another 15mins
+    sudo -v
+
+    echo "[[ System services ]]"
+    sudo timedatectl set-timezone "$KALI_TZ"
+    sudo systemctl enable ntp
+    sudo systemctl start ntp
     sudo systemctl enable postgresql
-    sudo service ssh start
-    sudo service postgresql start
+    sudo systemctl start postgresql
     sudo msfdb init
     echo ""
 
@@ -96,6 +95,9 @@ stage1() {
     GO111MODULE=on go get -u -v github.com/lc/gau
     echo ""
 
+    # Refresh our credential cache timeout for another 15mins
+    sudo -v
+
     echo "[[ Github projects ]]"
     echo "[[ Github projects - GF - examples ]]"
     svn export --force https://github.com/tomnomnom/gf/trunk/examples ~/.gf
@@ -119,7 +121,7 @@ stage1() {
     (cd src && git clone https://gitlab.com/tobiasholl/ldmalloc)
     echo "[[ Github projects - PWNDBG ]]"
     (cd src && git clone https://github.com/pwndbg/pwndbg; cd pwndbg && ./setup.sh --user)
-    # This installs enum34==1.10.0, which is broken, so reinstall a good version
+    # pwndbg installs enum34==1.10.0, which is broken, so reinstall a good version
     python3 -m pip install --user enum34==1.1.8
     echo "[[ Github projects - Windows is strange ]]"
     curl https://raw.githubusercontent.com/imurasheen/Extract-PSImage/master/Extract-Invoke-PSImage.ps1 -o src/Extract-Invoke-PSImage.ps1
@@ -166,8 +168,15 @@ stage2() {
     echo "[[ FINISHED ]]"
 }
 
-stage1 && (stage2 >/tmp/stage2.out 2>&1 &)
+[[ -z "$1" ]] && stage1 && (stage2 >/tmp/stage2.out 2>&1 &)
+[[ "$1" == "--stage2" ]] && (stage2 >/tmp/stage2.out 2>&1 &)
 
-echo "[[ ... deferred tasks running in background (/tmp/stage2.out) ... ]]"
+sleep 5
+if grep -q http /tmp/stage2.out; then
+    echo "[[ Deferred tasks running in background (/tmp/stage2.out) ]]"
+else
+    echo "!! Deferred tasks not running, probably sudo auth timeout exceeded !!"
+    echo "!! Re-try tasks with : $0 --stage2"
+fi
 echo "[[ Done, please login ]]"
 echo ""
