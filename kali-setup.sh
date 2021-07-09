@@ -36,15 +36,18 @@ sudo cp -f src/default_keyboard /etc/default/keyboard 2>/dev/null
 echo ""
 
 echo "[[ Install packages ]]"
+sudo dpkg --add-architecture i386
 sudo apt update
 sudo apt install -y --no-install-recommends \
-    libarchive-zip-perl libc6-dev libexempi-dev libexempi8 libgdbm-dev libgdiplus \
-    libgmp3-dev libimage-exiftool-perl libmcrypt4 libmhash2 libmime-charset-perl \
+    libarchive-zip-perl libc6-dev libc6-dbg:i386 libexempi-dev libexempi8 \
+    libgdbm-dev libgdiplus libglib2.0-dev libc6-dbg libgmp3-dev \
+    libimage-exiftool-perl libmcrypt4 libmhash2 libmime-charset-perl \
     libmpc-dev libposix-strptime-perl libreadline-dev libsombok3 libssl-dev \
     libunicode-linebreak-perl \
     ack aptitude cargo console-data console-setup evolution fonts-powerline \
-    foremost gobuster golang httpie jq keyboard-configuration nodejs \
-    npm powershell redis-tools rlwrap seclists steghide tmux
+    foremost gdb git gobuster golang httpie jq keyboard-configuration nodejs \
+    npm powershell python3-dev python3-pip python3-setuptools redis-tools \
+    rlwrap seclists steghide tmux
 echo ""
 
 echo "[[ System packages ]]"
@@ -69,7 +72,7 @@ echo "[[ Python packages ]]"
 curl https://bootstrap.pypa.io/get-pip.py -o src/get-pip.py
 python3 src/get-pip.py
 # - Install pip modules for Python3
-python3 -m pip install --user stegoveritas black xortool
+python3 -m pip install --user stegoveritas black xortool enum==1.1.8
 stegoveritas_install_deps
 echo ""
 
