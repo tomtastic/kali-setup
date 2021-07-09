@@ -91,32 +91,32 @@ GO111MODULE=on go get -u -v github.com/lc/gau
 echo ""
 
 echo "[[ Github projects ]]"
-# - FZF
+echo "[[ Github projects - FZF ]]"
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf; ~/.fzf/install --completion --key-bindings --update-rc --no-bash --no-fish
-# - TMUX
+echo "[[ Github projects - TMUX ]]"
 (cd src && git clone https://github.com/samoshkin/tmux-config.git; ./tmux-config/install)
-# - RUSTSCAN
+echo "[[ Github projects - RUSTSCAN ]]"
 (cd src && curl -L https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb -O && sudo dpkg -i rustscan_2.0.1_amd64.deb)
-# - WEBSHELLS
+echo "[[ Github projects - WEBSHELLS ]]"
 (cd src && git clone https://github.com/xl7dev/WebShell.git)
-# - RSA tool
+echo "[[ Github projects - RSACTFTOOL ]]"
 (cd src && git clone https://github.com/Ganapati/RsaCtfTool.git; cd RsaCtfTool && python3 -m pip install --user -r "requirements.txt")
-# - Stegseek
+echo "[[ Github projects - STEGSEEK ]]"
 (cd src && wget https://github.com/RickdeJager/stegseek/releases/download/v0.5/stegseek_0.5-1.deb && sudo apt -y install ./stegseek_0.5-1.deb)
+echo "[[ Github projects - VOLATILITY ]]"
 # - Volatility (not v3) : eg. python vol.py -f <imagepath> windows.info
 (cd src && git clone https://github.com/volatilityfoundation/volatility.git)
-# - Tobias Holl (team HXP)
+echo "[[ Github projects - TOBIAS HOLL tools (Team HXP) ]]"
 (cd src && git clone https://gitlab.com/tobiasholl/traceheap)
 (cd src && git clone https://gitlab.com/tobiasholl/ldmalloc)
-# - pwndbg (for gdb)
-(cd src && git clone https://github.com/pwndbg/pwndbg; cd pwndbg && ./setup.sh)
-# - Windows is strange
+echo "[[ Github projects - PWNDBG ]]"
+(cd src && git clone https://github.com/pwndbg/pwndbg; cd pwndbg && ./setup.sh --user)
+echo "[[ Github projects - Windows is strange ]]"
 curl https://raw.githubusercontent.com/imurasheen/Extract-PSImage/master/Extract-Invoke-PSImage.ps1 -o src/win/Extract-Invoke-PSImage.ps1
-# - Malware analysis - Didier Stevens - oledump
+echo "[[ Github projects - Malware analysis - Didier Stevens - oledump ]]"
 (cd src && curl https://didierstevens.com/files/software/oledump_V0_0_60.zip -O && unzip oledump_V0_0_60.zip)
-# - Malware analysis - decalage2 - oletools
+echo "[[ Github projects - Malware analysis - decalage2 - oletools ]]"
 python3 -m pip install --user -U https://github.com/decalage2/oletools/archive/master.zip
-
 echo ""
 
 echo "[[ Misc crap for binwalk? ]]"
@@ -127,11 +127,12 @@ cd /tmp && rm -rf unstuff
 cd ~kali || exit
 echo ""
 
-echo "[[ Handy synlinks ]]"
+echo "[[ Handy symlinks ]]"
 ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
 sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
 ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
+echo ""
 
 echo "[[ Reinitialise our ZSH environment ]]"
-# shellcheck source=/dev/null
-. ~/.zshrc
+zsh -l
+echo ""
