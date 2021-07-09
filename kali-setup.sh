@@ -142,15 +142,12 @@ stage2() {
     # These things take a long time (large downloads or compiling), so
     # we defer them to this stage and background them where possible
     echo "[[ Backgrounded : Installing larger packages ]]"
-    # shellcheck disable=SC2024
     sudo DEBIAN_FRONTEND=noninteractive apt install -y -q --no-install-recommends nodejs npm seclists
     sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
     echo ""
 
     echo "[[ Backgrounded : Node packages - For Electron apps ]]"
-    # shellcheck disable=SC2024
     sudo npm install -g asar
-    # shellcheck disable=SC2024
     sudo npm install -g redis-dump
     echo ""
 
