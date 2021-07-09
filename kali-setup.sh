@@ -38,7 +38,7 @@ echo ""
 echo "[[ Install packages ]]"
 sudo dpkg --add-architecture i386
 sudo apt update
-sudo apt install -y --no-install-recommends \
+sudo DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     libarchive-zip-perl libc6-dev libc6-dbg:i386 libexempi-dev libexempi8 \
     libgdbm-dev libgdiplus libglib2.0-dev libc6-dbg libgmp3-dev \
     libimage-exiftool-perl libmcrypt4 libmhash2 libmime-charset-perl \
