@@ -4,12 +4,13 @@
 # Run : setup-kali.sh
 
 echo "[[ Init sudo ]]"
-sudo -l
+rm -f ~/readme.md
+sudo -l >/dev/null || exit 1
 echo ""
 
 echo "[[ Set password ]]"
 if [[ ! -f ~/.passwd_set ]]; then
-    passwd kali
+    sudo passwd kali || exit 1
     touch ~/.passwd_set
 fi
 echo ""
@@ -27,25 +28,26 @@ DOTFILES=(
     "src/.gdbinit"
     "src/.gf"
     "src/.zshrc"
-    "src/.tmux*"
+    "src/.tmux.conf"
     "src/.hushlogin"
 )
 for d in "${DOTFILES[@]}"; do
-    mv "$d" ~/
+    mv -f "$d" ~/
 done
-# shellcheck source=/dev/null
-. ~/.zshrc
-sudo mv src/default_keyboard /etc/default/keyboard
+# We have an Apple keyboard for better or worse...
+sudo mv -f src/default_keyboard /etc/default/keyboard
 echo ""
 
 echo "[[ Install packages ]]"
 sudo apt update
-sudo apt -y install golang gobuster seclists jq tmux fonts-powerline aptitude evolution httpie \
-    console-data keyboard-configuration console-setup cargo libgmp3-dev libmpc-dev libssl-dev \
-    libreadline-dev libgdbm-dev powershell libgdiplus libc6-dev rlwrap nodejs npm redis-tools \
-    libmcrypt4 libmhash2 steghide foremost libarchive-zip-perl libexempi-dev libexempi8 \
-    libimage-exiftool-perl libmime-charset-perl libposix-strptime-perl libsombok3 \
-    libunicode-linebreak-perl ack
+sudo apt -y install --no-install-recommends \
+    libarchive-zip-perl libc6-dev libexempi-dev libexempi8 libgdbm-dev libgdiplus \
+    libgmp3-dev libimage-exiftool-perl libmcrypt4 libmhash2 libmime-charset-perl \
+    libmpc-dev libposix-strptime-perl libreadline-dev libsombok3 libssl-dev \
+    libunicode-linebreak-perl \
+    ack aptitude cargo console-data console-setup evolution fonts-powerline \
+    foremost gobuster golang httpie jq keyboard-configuration nodejs \
+    npm powershell redis-tools rlwrap seclists steghide tmux
 echo ""
 
 echo "[[ System packages ]]"
@@ -132,3 +134,7 @@ echo "[[ Handy synlinks ]]"
 ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
 sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
 ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
+
+echo "[[ Reinitialise our ZSH environment ]]"
+# shellcheck source=/dev/null
+. ~/.zshrc
