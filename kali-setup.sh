@@ -95,7 +95,6 @@ stage1() {
     # Refresh our credential cache timeout for another 15mins
     sudo -v
 
-    echo "[[ Github projects ]]"
     echo "[[ Github projects - GF - examples ]]"
     svn export --force https://github.com/tomnomnom/gf/trunk/examples ~/.gf
     echo "[[ Github projects - FZF ]]"
@@ -106,6 +105,8 @@ stage1() {
     (cd src && curl -L https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb -O && sudo dpkg -i rustscan_2.0.1_amd64.deb)
     echo "[[ Github projects - WEBSHELLS ]]"
     (cd src && git clone https://github.com/xl7dev/WebShell.git)
+    echo "[[ Github projects - Sublist3r ]]"
+    (cd src && git clone https://github.com/aboul3la/Sublist3r.git)
     echo "[[ Github projects - RSACTFTOOL ]]"
     (cd src && git clone https://github.com/Ganapati/RsaCtfTool.git; cd RsaCtfTool && python3 -m pip install --user -r "requirements.txt")
     echo "[[ Github projects - STEGSEEK ]]"
@@ -113,6 +114,8 @@ stage1() {
     echo "[[ Github projects - VOLATILITY ]]"
     # - Volatility (not v3) : eg. python vol.py -f <imagepath> windows.info
     (cd src && git clone https://github.com/volatilityfoundation/volatility.git)
+    # - Volatility (v3) : eg. python3 vol.py -f <imagepath> windows.info
+    (cd src && git clone https://github.com/volatilityfoundation/volatility3.git)
     echo "[[ Github projects - TOBIAS HOLL tools (Team HXP) ]]"
     (cd src && git clone https://gitlab.com/tobiasholl/traceheap)
     (cd src && git clone https://gitlab.com/tobiasholl/ldmalloc)

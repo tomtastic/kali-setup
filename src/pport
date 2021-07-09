@@ -1,0 +1,360 @@
+#!/usr/bin/env perl
+# 08/10/2013 - TRCM - play nicely when reading multiline stdin from a pipe (v2.9)
+#                   - heed some PerlCritic advice (v2.94)
+#                   - uninitialised value bugs (v2.95)
+# 07/01/2014 - TRCM - (DB) query dbSquared for SATHS
+# 12/02/2014 - TRCM - fix error codes on bad hostnames
+# 02/05/2014 - TRCM - fix host parsing when fed from loop (eg. not stdin)
+# 23/06/2014 - TRCM - add option for IPv6 (v3.1)
+# 28/08/2014 - TRCM - add timings (v3.2)
+# 12/12/2014 - TRCM - pass an SSH identification string (v3.3)
+#                   - preventing sshd "Did not receive identification string" informational notice
+# 06/01/2015 - TRCM - Add option to do more SSH handshake and get algo exchange (v4.0)
+# 25/10/2017 - TRCM - Fix undefined s_response
+#
+# TODO: Add a brief mode, printing more tersely with  just 'success/fail'
+# TODO: Can we get any more details from the BladeLogic packets?
+ 
+use strict;
+use warnings;
+use IO::Socket::INET;
+use IO::Select;
+use File::Basename qw(basename);
+use Getopt::Long;
+use Time::HiRes qw(time);
+ 
+our $VERSION = "4.01";
+my $name = basename($0);
+ 
+# Flush to STDOUT as it happens, don't buffer.
+local $| = 1;
+my ($fromfile, $port, $timeout, $kex, $debug, $ipv6, $hosts_found, $single_host);
+my $hosts_successful = 0;
+ 
+wtf() unless @ARGV > 0 or (! -t STDIN);
+GetOptions  ('i|input=s' => \$fromfile,
+             'p|port=s' => \$port,
+             't|timeout=s' => \$timeout,
+             'k|kex' => \$kex,
+             'd|debug' => \$debug,
+             '6|ipv6' => \$ipv6,
+             'vV|version' => sub{ info($VERSION);exit 0; },
+             'h|help|?' => sub{ info($VERSION);wtf(); },
+) or wtf();
+if ($ipv6 && ($^V lt 'v5.14.0')) { die "IPv6 support from IO::Socket requires PERL >= v5.14\n" };
+$single_host = ( defined $ARGV[0] ) ? trim($ARGV[0]) : "";
+$port = ( defined $port ) ? $port : 22;          # default to port 22
+$timeout = ( defined $timeout ) ? $timeout : 3;  # default to 3 seconds
+ 
+# If we're being fed by a pipe, just suck it up and get on with it...
+if (! -t STDIN && $single_host eq "") {
+   while (my $host = <>) {
+      chomp $host;
+      # Handle CSV input, but host must be the first field
+      $host =~ s/[,;].*$//;
+      # Skip this line unless we read some non-whitespace
+      next unless $host =~ m/\S+/;
+      my ($pokeok,$elapsed,$raw_response) = poke($host);
+      if ($pokeok == 0) {
+         #if  (defined $raw_response) { $hosts_successful += 1; };
+         $hosts_successful += 1;
+         my $parsed_response = grok($raw_response);
+         win($host,$elapsed,$parsed_response,$raw_response);
+      } else {
+         fail($host,$elapsed,$raw_response) and next;
+      }
+   }
+} else {
+# Otherwise, work on the list from the command line...
+   # Check we've got something other than just whitespace
+   if ($single_host =~ m/\S+/) {
+      my ($pokeok,$elapsed,$raw_response) = poke($single_host);
+      if ($pokeok == 0) {
+         if  (defined $raw_response) { $hosts_successful += 1; };
+         my $parsed_response = grok($raw_response);
+         win($single_host,$elapsed,$parsed_response,$raw_response);
+      } else {
+         fail($single_host,$elapsed,$raw_response) and exit 1;
+      }
+   } elsif (defined $fromfile) {
+      my @hosts = gethostlist($fromfile);
+      my $total_elapsed;
+      foreach my $host (@hosts) {
+         my ($pokeok,$elapsed,$raw_response) = poke($host);
+         if ($pokeok == 0) {
+            #if  (defined $raw_response) { $hosts_successful += 1; };
+            $hosts_successful += 1;
+            my $parsed_response = grok($raw_response);
+            $total_elapsed += $elapsed;
+            win($host,$elapsed,$parsed_response,$raw_response);
+         } else {
+            $total_elapsed += $elapsed;
+            fail($host,$elapsed,$raw_response) and next;
+         }
+      }
+      if (-t STDOUT && defined $fromfile ) {
+         printf(" + %s out of %s successfully contacted taking %.1f seconds\n",$hosts_successful,$hosts_found,$total_elapsed);
+      }
+   } else {
+      wtf ();
+   }
+}
+#------------------------------------------------------------------------------
+sub win {
+   # Pretty print the great success
+   my $s_success_colour = '32'; # 31=red,32=green,33=yellow
+   my ($s_host,$s_elapsed,$s_parsed,$s_raw) = @_;
+   if ($debug) {
+      binmode(STDOUT, ':encoding(UTF-8)');
+      printf("%s, \e[%dmSuccess\e[m, TCP %d, %.1g sec%s, %s\nDEBUG: %s\n",
+         $s_host,$s_success_colour,$port,$s_elapsed,$timeout<=1?"":"s",$s_parsed,hex2ascii(hexprint($s_raw)));
+   } else {
+      if (-t STDOUT) {
+         printf("%s, \e[%dmSuccess\e[m, TCP %d, %.1g sec%s, %s\n",
+            $s_host,$s_success_colour,$port,$s_elapsed,$timeout<=1?"":"s",$s_parsed);
+      } else {
+         printf("%s,Success,TCP %d,%.1g sec%s,%s\n",
+            $s_host,$port,$s_elapsed,$timeout<=1?"":"s",$s_parsed);
+      }
+   }
+   return 0;
+}
+ 
+#------------------------------------------------------------------------------
+sub fail {
+   # We couldn't open a socket, let the user have the reason why from IO::Socket
+   my $s_fail_colour = '31'; # 31=red,32=green,33=yellow
+   my ($s_failhost,$s_elapsed,$s_failcode) = @_;
+   $s_failcode =~ s/IO::Socket::INET:\ //;
+   if (-t STDOUT) {
+      printf("%s, \e[%dmFailure\e[m, TCP %d, %.1g sec%s, %s\n",
+         $s_failhost,$s_fail_colour,$port,$s_elapsed,$timeout<=1?"":"s",$s_failcode);
+   } else {
+      printf("%s,Failure,TCP %d,%.1g sec%s,%s\n",
+         $s_failhost,$port,$s_elapsed,$timeout<=1?"":"s",$s_failcode);
+   }
+   return 1;
+}
+ 
+#------------------------------------------------------------------------------
+sub gethostlist {
+   my $s_filename = shift;
+   my @s_hosts;
+   if (-t STDOUT) {
+      print("\e[m");
+      print(" + Reading host list from file : $s_filename\n");
+   }
+   open(my $s_host_fh, '<', $s_filename) or die "$!\n";
+   while (defined (my $s_line = <$s_host_fh>)) {
+      chomp $s_line;
+      # Handle blank lines
+      next if $s_line =~ /^$/;
+      next if $s_line =~ /^#.*$/;
+      # Handle comments or whitespace trailing host
+      $s_line =~ s/\s*#.*$//;
+      $s_line =~ s/^#$//;
+      $s_line =~ s/\s+$//;
+      # Handle CSV input, but host must be the first field
+      $s_line =~ s/[,;].*$//;
+      push(@s_hosts,$s_line);
+   }
+   close $s_host_fh;
+   $hosts_found = $#s_hosts + 1;
+   if (-t STDOUT) {
+      print(" + Found $hosts_found hosts\n");
+   }
+   return @s_hosts;
+}
+ 
+#------------------------------------------------------------------------------
+sub poke {
+   # Open the socket to the host
+   # Returns (1,elapsed_time,error_message) for failure, or (0,elapsed_time,result_message) for success
+   my $s_start = time;
+   my $s_host = shift;
+   my $s_response;
+   my $s_socket_read_length = 128; # bytes
+   my @s_fragments = ( 0 ); # Read just once from the socket
+   my $s_socket = IO::Socket::INET->new(
+      PeerAddr => $s_host,
+      PeerPort => $port,
+      Proto    => "tcp",
+      Type     => SOCK_STREAM,
+      Timeout  => $timeout
+   ) or return (1,time-$s_start,$@);
+ 
+   # Special poking for special ports
+   for ($port) {
+      # BladeLogic
+      /4750/ && do {
+         # If we're checking the RSCD(4750/tcp) service, send some magic first
+         # The clienthello string contents were experimentally found
+         my $rscdinit = "TLS";
+         my $rscdclienthello = pack( 'H*', '16030100490100004503015215ef8253b424768b3a19e6f8def4ebf0157db11d475b97c4d40b3e0af6c26e00001800390038003500160013000a00330032002f0007000500ff0100000400230000' );
+         if ( defined(IO::Select->new($s_socket)->can_write($timeout)) ) {
+            $s_socket->send($rscdinit);
+            $s_socket->send($rscdclienthello);
+            $s_socket_read_length = 256;
+         }
+         last;
+      };
+      # HTTP
+      /80/ && do {
+         # If we're checking the HTTP(80/tcp) service, fire a GET
+         my $httpsinit = "GET / HTTP/1.1\r\nhost: $s_host\r\n\r\n";
+         if ( defined(IO::Select->new($s_socket)->can_write($timeout)) ) {
+            $s_socket->send($httpsinit);
+            $s_socket_read_length = 512;
+            @s_fragments = ( 0,1,2,3,4,5,6,7 ); # Read several times from the socket, as response often fragmented
+         }
+         last;
+      };
+      # SSH
+      /22/ && do {
+         # Be polite and pass a clienthello to sshd (stealthy, just "Connection closed by n.n.n.n" logged by sshd at DEBUG)
+         my $sshclienthello = "SSH-2.0-pport_$VERSION\n";
+         # Alternatively, this makes sshd log "probed from n.n.n.n with SSH-2.0-Probe-pport_4.0. Don't panic."
+         #my $sshclienthello = "SSH-2.0-Probe-pport_$VERSION\r\n";
+         if ( defined(IO::Select->new($s_socket)->can_write($timeout)) ) {
+            $s_socket->send($sshclienthello);
+            if (defined $kex) {
+               $s_socket_read_length = 2048;
+               @s_fragments = ( 0,1,2,3 ); # Read twice from the socket; client indentification, algorithm exchange.
+            }
+         }
+         last;
+      };
+      # By default, say nothing
+   }
+ 
+   # Listen to the response
+   for my $s_frag (0 .. $#s_fragments) {
+      if ( defined(IO::Select->new($s_socket)->can_read($timeout)) ) {
+         $s_socket->recv($s_frag,$s_socket_read_length);
+         # Build up the response from however many fragments we read from the socket
+         $s_response = defined($s_response) ? $s_response.$s_frag : $s_frag;
+      }
+      # If we read nothing from the socket on the last iteration, stop reading
+      last unless $s_frag;
+   }
+   close($s_socket);
+   if (! defined $s_response || $s_response eq "") { return (0,time-$s_start,"Nothing") };
+   return (0,time-$s_start,$s_response);
+}
+ 
+#------------------------------------------------------------------------------
+sub grok {
+   my $s_response = shift;
+   my $s_grok;
+   for ($s_response) {
+      if (defined $kex && $port == 22) {
+         # Separate client indentification and algorithm options from concatenated response
+         my %algo;
+         my $keyexchangeinit=chr(hex('14'));
+         my $offset=index($s_response,$keyexchangeinit)+1;
+         my $clientid=substr($s_response,0,$offset-7); # umm, seven.
+         my $cookie=unpack "A*", substr($s_response,$offset,16); $offset += 16;
+         my $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{kex} = unpack "A*", substr($s_response,$offset,$length); $offset += $length;
+         $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{hostkey} = unpack "A*", substr($s_response,$offset,$length); $offset += $length;
+         $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{enc1} = unpack "A*", substr($s_response,$offset,$length); $offset += $length;
+         $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{enc2} = unpack "A*", substr($s_response,$offset,$length); $offset += $length;
+         $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{mac1} = unpack "A*", substr($s_response,$offset,$length); $offset += $length;
+         $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{mac2} = unpack "A*", substr($s_response,$offset,$length); $offset += $length;
+         $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{comp1} = unpack "A*", substr($s_response,$offset,$length); $offset += $length;
+         $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{comp2} = unpack "A*", substr($s_response,$offset,$length); $offset += $length;
+         $length = unpack "N", substr($s_response,$offset,4); $offset += 4;
+         $algo{lang} = unpack "A*", substr($s_response,$offset,$length);
+ 
+         # We like spaces
+         foreach my $key (keys %algo) {
+            $algo{$key} =~ s/,/,\ /g;
+         }
+ 
+         # If client and server algorithms are the same, just print the set once
+         if (($algo{enc1} eq $algo{enc2}) and ($algo{mac1} eq $algo{mac2}) and ($algo{comp1} eq $algo{comp2})) {
+            $s_grok = sprintf("$clientid\nKey exchange   : %s\nHost key types : %s\nEncryption     : %s\nIntegrity      : %s\nCompression    : %s\n",$algo{kex},$algo{hostkey},$algo{enc1},$algo{mac1},$algo{comp1});
+         } else {
+            $s_grok = sprintf("$clientid\nKey exchange: %s\nHost key types: %s\nEncryption (clnt->srv): %s\nEncryption (srv->clnt): %s\nIntegrity (clnt->srv): %s\nIntegrity (srv->clnt): %s\nCompression (clnt->srv): %s\nCompression (srv->clnt): %s",$algo{kex},$algo{hostkey},$algo{enc1},$algo{enc2},$algo{mac1},$algo{mac2},$algo{comp1},$algo{comp2});
+         }
+         last;
+      }
+      /^Nothing$/                 && do {$s_grok = "Nothing"; last;};
+      #/^SSH-2.0-Sun_SSH/          && do {$s_grok = "looks like Solaris"; last;};
+      #/^SSH-2.0-RomSShell_4.62/   && do {$s_grok = "looks like HPILOv3"; last;};
+      #/^SSH-2.0-mpSSH_0.1.1/      && do {$s_grok = "looks like HPILOv2"; last;};
+      #/^SSH-2.0-mpSSH_0.1.0/      && do {$s_grok = "looks like HPILOv2"; last;};
+      #/^SSH-2.0-mpSSH_0.0.1/      && do {$s_grok = "looks like HPILOv1"; last;};
+      #/^SSH-2.0-OpenSSH_OA/       && do {$s_grok = "looks like HP-OA"; last;};
+      #/^SSH-2.0-IPSSH-1.10.0/     && do {$s_grok = "looks like HPLO-100"; last;};
+      # These are good for HTTP parsing
+      /Server: /                  && do {m/Server: (.+)/; $s_grok=(defined $1)?$1:""; last;};
+      /title/                     && do {m/title>[\r\n]*(.+?)<\/title/sg; $s_grok=(defined $1)?$1:""; last;};
+      # BladeLogic responses have this
+      /rscd/                      && do {$s_grok = "looks like BladeLogic RSCD"; last;};
+      # VMware ESXi
+      /^SSH-2.0-dropbear_0.52/    && do {$s_grok = "looks like VMWARE ESXi (try TCP port 902)"; last;};
+      # Failed to match, so set the output to be the raw response trimmed to just the first line
+      my @s_grok=split /\n/,$s_response;
+      $s_grok=$s_grok[0];
+   }
+   # portable chomp
+   $s_grok =~ s/\015?\012?$//;
+   return $s_grok;
+}
+ 
+#------------------------------------------------------------------------------
+sub trim {
+   my $s_string = shift;
+   $s_string =~ s/^\s+//;
+   $s_string =~ s/\s+$//;
+   return $s_string;
+}
+ 
+#------------------------------------------------------------------------------
+sub hexprint {
+    my ($s_string)=@_;
+    my $s_hex="";
+    my $s_offset=0;
+    my @s_bytes=unpack "C*",$s_string;
+    foreach my $s_byte (@s_bytes) {
+        $s_hex=$s_hex . sprintf "%02x",$s_byte;
+        $s_offset++;
+    };
+    return $s_hex;
+}
+ 
+#------------------------------------------------------------------------------
+sub hex2ascii {
+   my ($s_hex)=@_;
+   if ($s_hex =~ /:/) {
+      $s_hex =~ s/[: ]//g;
+   }
+   my $s_string = join("",pack("H*",$s_hex) =~ m/(.)/g);
+   # Don't print the unprintable
+   $s_string =~ s/[^\x20-\x7E]//; # Strip non-core ASCII printable characters
+   # Print the unprintable as unicode
+   #$s_string =~ tr[\0-\x1F\x7F] [\x{2400}-\x{241F}\x{2421}];
+   return $s_string;
+}
+ 
+#------------------------------------------------------------------------------
+sub info {
+   my $s_version = shift;
+   printf("\e[%dm%s\e[m - %s  (PERL v%vd)\n",33,$name,$s_version,$^V);
+   return;
+}
+ 
+#------------------------------------------------------------------------------
+sub wtf {
+   printf("Usage: %s -dhk6 [-i file] [-p tcp_port] [-t timeout_secs] hostname\n",$name);
+   exit;
+}
+ 
