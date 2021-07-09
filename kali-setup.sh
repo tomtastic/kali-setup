@@ -101,7 +101,7 @@ function kali_setup() {
     echo "[[ Github projects - FZF ]]"
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf; ~/.fzf/install --completion --key-bindings --update-rc --no-bash --no-fish
     echo "[[ Github projects - TMUX ]]"
-    (cd src && git clone https://github.com/samoshkin/tmux-config.git; ./tmux-config/install)
+    (cd src && git clone https://github.com/samoshkin/tmux-config.git; ./tmux-config/install.sh)
     echo "[[ Github projects - Rustscan ]]"
     (cd src && curl -L https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb -O && sudo dpkg -i rustscan_2.0.1_amd64.deb)
     echo "[[ Github projects - WebShells ]]"
