@@ -1,4 +1,4 @@
-# Remote kali VM access:
+# kali setup...
 ```
 kali$ sudo systemctl enable ssh
 kali$ sudo systemctl start ssh
