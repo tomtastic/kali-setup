@@ -10,4 +10,4 @@ local$ ssh -t kali "curl https://github.com/tomtastic/kali-setup/archive/refs/he
 ```
 
  - tested against kali-linux-2021.2-vmware-amd64
- - apt will download about 600MB of additional packages (mainly seclists!)
+ - apt will download about 600MB of additional packages (mainly seclists and nodejs!)
