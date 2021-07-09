@@ -45,9 +45,9 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     libmpc-dev libposix-strptime-perl libreadline-dev libsombok3 libssl-dev \
     libunicode-linebreak-perl \
     ack aptitude cargo console-data console-setup evolution fonts-powerline \
-    foremost gdb git gobuster golang httpie jq keyboard-configuration nodejs \
-    npm powershell python3-dev python3-pip python3-setuptools redis-tools \
-    rlwrap seclists steghide tmux
+    foremost gdb git gobuster golang httpie jq keyboard-configuration \
+    powershell python3-dev python3-pip python3-setuptools redis-tools \
+    rlwrap steghide tmux
 echo ""
 
 echo "[[ System packages ]]"
@@ -136,6 +136,10 @@ echo "[[ Handy symlinks ]]"
 ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
 sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
 ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
+echo ""
+
+echo "[[ Backgrounded : Installing large deferred packages (/tmp/deferred.out) ]]"
+sudo DEBIAN_FRONTEND=noninteractive nohup apt install -y -q --no-install-recommends nodejs npm seclists > /tmp/deferred.out &
 echo ""
 
 echo "[[ Done, login again pls ]]"
