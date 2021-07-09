@@ -33,13 +33,19 @@ DOTFILES=(
 for d in "${DOTFILES[@]}"; do
     mv "$d" ~/
 done
+# shellcheck source=/dev/null
 . ~/.zshrc
 sudo mv src/default_keyboard /etc/default/keyboard
 echo ""
 
 echo "[[ Install packages ]]"
 sudo apt update
-sudo apt -y install golang gobuster seclists jq tmux fonts-powerline aptitude evolution httpie console-data keyboard-configuration console-setup cargo libgmp3-dev libmpc-dev libssl-dev libreadline-dev libgdbm-dev powershell libgdiplus libc6-dev rlwrap nodejs npm redis-tools libmcrypt4 libmhash2 steghide foremost libarchive-zip-perl libexempi-dev libexempi8 libimage-exiftool-perl libmime-charset-perl libposix-strptime-perl libsombok3 libunicode-linebreak-perl ack
+sudo apt -y install golang gobuster seclists jq tmux fonts-powerline aptitude evolution httpie \
+    console-data keyboard-configuration console-setup cargo libgmp3-dev libmpc-dev libssl-dev \
+    libreadline-dev libgdbm-dev powershell libgdiplus libc6-dev rlwrap nodejs npm redis-tools \
+    libmcrypt4 libmhash2 steghide foremost libarchive-zip-perl libexempi-dev libexempi8 \
+    libimage-exiftool-perl libmime-charset-perl libposix-strptime-perl libsombok3 \
+    libunicode-linebreak-perl ack
 echo ""
 
 echo "[[ System packages ]]"
