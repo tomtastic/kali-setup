@@ -115,6 +115,8 @@ stage1() {
     (cd src && wget https://github.com/RickdeJager/stegseek/releases/download/v0.5/stegseek_0.5-1.deb && sudo apt -y install ./stegseek_0.5-1.deb)
     echo "[[ Github projects - creddump7 ]]"
     (cd src && git clone https://github.com/Neohapsis/creddump7.git)
+    echo "[[ Github projects - xssmap ]]"
+    (cd src && git clone https://github.com/Jewel591/xssmap.git)
     echo "[[ Github projects - Volatility ]]"
     # - Volatility (not v3) : eg. python vol.py -f <imagepath> windows.info
     (cd src && git clone https://github.com/volatilityfoundation/volatility.git)
