@@ -16,6 +16,9 @@ stage1() {
     fi
     echo ""
 
+    echo "[[ Start NTP service on boot ]]"
+    sudo systemctl enable ntp; sudo systemctl start ntp
+
     echo "[[ Be in the home directory ]]"
     cd ~kali || exit 1
     echo ""
