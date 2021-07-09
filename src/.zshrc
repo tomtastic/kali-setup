@@ -248,9 +248,9 @@ if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
 fi
 
 # enable command-not-found if installed
-if [ -f /etc/zsh_command_not_found ]; then
-    . /etc/zsh_command_not_found
-fi
+#if [ -f /etc/zsh_command_not_found ]; then
+#    . /etc/zsh_command_not_found
+#fi
 
 #
 ## CUSTOM COMMANDS - trcm
@@ -261,6 +261,10 @@ fi
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# PYTHON
+export PYTHONPATH=/home/kali/.local/lib/python3.9/site-packages:$PYTHONPATH
+export PYTHONPATH=/usr/local/lib/python3.9/dist-packages:$PYTHONPATH
 
 # GO
 export GOPATH=$HOME/go
