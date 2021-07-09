@@ -1,9 +1,10 @@
 #!/bin/bash
 
 KALI_TZ="Europe/London"
+LOG="/tmp/background_tasks.log"
 
 
-stage1() {
+function kali_setup() {
     echo "[[ Init sudo ]]"
     rm -f ~/readme.md
     sudo -l >/dev/null || exit 1
@@ -154,38 +155,76 @@ stage1() {
     echo ""
 }
 
-stage2() {
-    # These things take a long time (large downloads or compiling), so
-    # we defer them to this stage which runs in the background
 
+function bgtask_apt() {
     # Refresh our credential cache timeout for another 15mins
     sudo -v
-
     echo "[[ Backgrounded : Installing larger packages ]]"
     sudo DEBIAN_FRONTEND=noninteractive apt install -y -q --no-install-recommends nodejs npm seclists
-    sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/
-    echo ""
+    sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/ 2>/dev/null
+}
 
+
+function bgtask_rust() {
+    # Refresh our credential cache timeout for another 15mins
+    sudo -v
+    echo "[[ Backgrounded : Rust packages ]]"
+    cargo install feroxbuster
+}
+
+
+function bgtask_node() {
+    # Refresh our credential cache timeout for another 15mins
+    sudo -v
     echo "[[ Backgrounded : Node packages - For Electron apps ]]"
     sudo npm install -g asar
     sudo npm install -g redis-dump
-    echo ""
+}
 
-    echo "[[ Backgrounded : Rust packages ]]"
-    cargo install feroxbuster
 
+function bgtasks() {
+    # These things take a long time (large downloads or compiling), so
+    # we defer them to this stage which runs in the background
+    bgtask_apt
+    bgtask_node
+    bgtask_rust
     echo "[[ FINISHED ]]"
 }
 
-[[ -z "$1" ]] && stage1 && (stage2 >/tmp/stage2.out 2>&1 &)
-[[ "$1" == "--stage2" ]] && (stage2 >/tmp/stage2.out 2>&1 &)
+
+# Sanity check
+if [[ ! $(lsb_release -i 2>/dev/null) =~ "Kali" ]]; then
+    echo "Only for Kali distributions!"
+    exit 1
+fi
+
+# Options parsing
+if [[ -z "$1" ]]; then
+    # No arguments, run setup and background tasks
+    kali_setup && (bgtasks > "$LOG" 2>&1 &)
+elif [[ "$1" =~ "bgtasks" ]]; then
+    # Run all the background tasks
+    (bgtasks > "$LOG" 2>&1 &)
+elif [[ "$1" =~ "apt" ]]; then
+    # Run only the 'apt' background task
+    (bgtask_apt > "$LOG".apt 2>&1 &)
+elif [[ "$1" =~ "rust" ]]; then
+    # Run only the 'rust' background task
+    (bgtask_rust > "$LOG".rust 2>&1 &)
+elif [[ "$1" =~ "node" ]]; then
+    # Run only the 'node' background task
+    (bgtask_node > "$LOG".node 2>&1 &)
+elif [[ "$1" =~ "help" || "$1" == "-h" ]]; then
+    echo "Usage: $0  [--bgtasks] | [--apt | --rust | --node]"
+    exit 0
+fi
 
 sleep 5
-if grep -q "Reading package lists..." /tmp/stage2.out; then
-    echo "[[ Deferred tasks running in background (/tmp/stage2.out) ]]"
+if grep -q "Reading package lists..." "$LOG"; then
+    echo "[[ Deferred tasks running in background ($LOG) ]]"
 else
     echo "!! Deferred tasks not running, probably sudo auth timeout exceeded !!"
-    echo "!! Re-try tasks with : $0 --stage2"
+    echo "!! Re-try tasks with : $0 --bgtasks"
 fi
 echo "[[ Done, please login ]]"
 echo ""
