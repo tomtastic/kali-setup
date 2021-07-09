@@ -140,12 +140,11 @@ stage1() {
     ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
     ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
     echo ""
-
 }
 
 stage2() {
     # These things take a long time (large downloads or compiling), so
-    # we defer them to this stage and background them where possible
+    # we defer them to this stage which runs in the background
 
     # Refresh our credential cache timeout for another 15mins
     sudo -v
@@ -162,7 +161,8 @@ stage2() {
 
     echo "[[ Backgrounded : Rust packages ]]"
     cargo install feroxbuster
-    echo ""
+
+    echo "[[ FINISHED ]]"
 }
 
 stage1 && (stage2 >/tmp/stage2.out 2>&1 &)
