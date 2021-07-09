@@ -105,7 +105,13 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf; ~/.fzf/install
 (cd src && git clone https://gitlab.com/tobiasholl/ldmalloc)
 # - pwndbg (for gdb)
 (cd src && git clone https://github.com/pwndbg/pwndbg; cd pwndbg && ./setup.sh)
+# - Windows is strange
 curl https://raw.githubusercontent.com/imurasheen/Extract-PSImage/master/Extract-Invoke-PSImage.ps1 -o src/win/Extract-Invoke-PSImage.ps1
+# - Malware analysis - Didier Stevens - oledump
+(cd src && curl https://didierstevens.com/files/software/oledump_V0_0_60.zip -O && unzip oledump_V0_0_60.zip)
+# - Malware analysis - decalage2 - oletools
+python3 -m pip install --user -U https://github.com/decalage2/oletools/archive/master.zip
+
 echo ""
 
 echo "[[ Misc crap for binwalk? ]]"
