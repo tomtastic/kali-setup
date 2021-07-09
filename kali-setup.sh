@@ -37,7 +37,7 @@ echo ""
 
 echo "[[ Install packages ]]"
 sudo apt update
-sudo apt -y install --no-install-recommends \
+sudo apt install -y --no-install-recommends \
     libarchive-zip-perl libc6-dev libexempi-dev libexempi8 libgdbm-dev libgdiplus \
     libgmp3-dev libimage-exiftool-perl libmcrypt4 libmhash2 libmime-charset-perl \
     libmpc-dev libposix-strptime-perl libreadline-dev libsombok3 libssl-dev \
