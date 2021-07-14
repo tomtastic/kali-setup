@@ -69,8 +69,7 @@ function kali_setup() {
 
     echo "[[ Python packages ]]"
     # - Install pip for Python2
-    #curl https://bootstrap.pypa.io/get-pip.py -o src/get-pip.py
-    #python3 src/get-pip.py
+    curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o src/get-pip.py && python src/get-pip.py
     # - Install pip modules for Python3
     python3 -m pip install --user stegoveritas black xortool enum34==1.1.8
     /home/kali/.local/bin/stegoveritas_install_deps
@@ -80,6 +79,7 @@ function kali_setup() {
     # - For stego in PNG files
     sudo gem install zsteg
     sudo gem install evil-winrm
+    sudo gem install rex-text
     echo ""
 
     echo "[[ Golang packages ]]"
