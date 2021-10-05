@@ -72,7 +72,7 @@ function kali_setup() {
     curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o src/get-pip.py && python src/get-pip.py
     # - Install pip modules for Python3
     python3 -m pip config --user set global.upgrade-strategy eager
-    python3 -m pip install --user stegoveritas black xortool enum34==1.1.8
+    python3 -m pip install --user stegoveritas black xortool enum34==1.1.8 pwntools
     /home/kali/.local/bin/stegoveritas_install_deps
     echo ""
 
