@@ -52,7 +52,9 @@ function kali_setup() {
         ack aptitude cargo console-data console-setup evolution fonts-powerline \
         foremost gdb git gobuster golang httpie jq keyboard-configuration \
         powershell python3-dev python3-pip python3-setuptools redis-tools \
-        rlwrap steghide sslsniff tmux zsh-syntax-highlighting
+        rlwrap steghide sslsniff tmux zsh-syntax-highlighting \
+        bpython python3-argcomplete python3-argh python3-blessings \
+        python3-curtsies python3-cwcwidth python3-watchdog
     echo ""
 
     # Refresh our credential cache timeout for another 15mins
