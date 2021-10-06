@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# 20211006 - TRCM - mount all VMWare shares into the running VM
+
+OPTIONS="uid=$(id -u),gid=$(id -g)"
+DIR="$HOME/shares"
+
+# an array of possible VMWare shares
+declare -a AVAILABLE
+while read -r; do
+    AVAILABLE+=("$REPLY")
+done <<< "$(vmware-hgfsclient)"
+
+# an array of mounted VMWare shares
+declare -a MOUNTED
+while read -r; do
+    [[ -n "$REPLY" ]] && MOUNTED+=("$REPLY")
+done <<< "$(mount | awk '/vmhgfs-fuse/ {print $3}' )"
+
+function list_mount() {
+    echo "[!] Available VMWare shares :"
+    for share in "${AVAILABLE[@]}"; do
+        echo "    $share"
+    done
+    echo "[!] Mounted shares :"
+    for share in "${MOUNTED[@]}"; do
+        echo "    $share"
+    done
+    exit
+}
+
+function do_mount() {
+    SHARE="$1"
+    if mount | grep -q "$DIR/$SHARE"; then
+        echo "[!] Already mounted"
+    elif mount | grep -q "$DIR "; then
+        echo "[!] All shares already mounted"
+    else
+        echo "[+] Mounting : $1"
+        [[ -d "$DIR"/"$SHARE" ]] || mkdir -p "$DIR/$SHARE"
+        if /usr/bin/vmhgfs-fuse .host:/"$SHARE" "$DIR/$SHARE" -o subtype=vmhgfs-fuse,"$OPTIONS"; then
+            mount | grep "$DIR/$SHARE"
+        else
+            rmdir "$DIR"/"$SHARE"
+            echo "[!] Error"
+        fi
+    fi
+}
+
+function do_mount_all() {
+    [[ -d "$DIR" ]] || mkdir -p "$DIR"
+    if mount | grep -q "$DIR"; then
+        do_unmount_all
+    fi
+    echo "[+] Mounting all shares"
+    if /usr/bin/vmhgfs-fuse .host:/ "$DIR" -o subtype=vmhgfs-fuse,"$OPTIONS"; then
+        mount | grep vmhgfs-fuse
+    else
+        false
+    fi
+}
+
+function do_unmount_all() {
+    if [[ "${#MOUNTED[@]}" -ge 1 ]]; then
+        for share in "${MOUNTED[@]}"; do
+            echo "[-] Un-mounting share : $share"
+            umount "$share"
+	    rmdir "$share"
+        done
+    fi
+}
+
+if [[ -z "$1" ]]; then
+    list_mount
+elif [[ "$1" = "-a" ]]; then
+    do_mount_all
+elif [[ "$1" = "-u" ]]; then
+    do_unmount_all
+else
+    do_mount "$1"
+fi
