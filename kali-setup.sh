@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/zsh
 
 KALI_TZ="Europe/London"
 LOG="/tmp/background_tasks.log"
