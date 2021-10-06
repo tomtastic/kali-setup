@@ -297,6 +297,7 @@ export GOBIN=$GOPATH/bin
 # Useful paths
 USEFUL=(
     "/usr/sbin"
+    "/home/kali/src"
     "/home/kali/.local/bin"
     "/home/kali/.cargo/bin"
     "/home/kali/go/bin"

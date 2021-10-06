@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 20211006 - TRCM - mount all VMWare shares into the running VM
 
-OPTIONS="uid=$(id -u),gid=$(id -g)"
+OPTIONS="allow_other,uid=$(id -u),gid=$(id -g)"
 DIR="$HOME/shares"
 
 # an array of possible VMWare shares
@@ -37,7 +37,7 @@ function do_mount() {
     else
         echo "[+] Mounting : $1"
         [[ -d "$DIR"/"$SHARE" ]] || mkdir -p "$DIR/$SHARE"
-        if /usr/bin/vmhgfs-fuse .host:/"$SHARE" "$DIR/$SHARE" -o subtype=vmhgfs-fuse,"$OPTIONS"; then
+        if sudo /usr/bin/vmhgfs-fuse .host:/"$SHARE" "$DIR/$SHARE" -o subtype=vmhgfs-fuse,"$OPTIONS"; then
             mount | grep "$DIR/$SHARE"
         else
             rmdir "$DIR"/"$SHARE"
@@ -52,7 +52,7 @@ function do_mount_all() {
         do_unmount_all
     fi
     echo "[+] Mounting all shares"
-    if /usr/bin/vmhgfs-fuse .host:/ "$DIR" -o subtype=vmhgfs-fuse,"$OPTIONS"; then
+    if sudo /usr/bin/vmhgfs-fuse .host:/ "$DIR" -o subtype=vmhgfs-fuse,"$OPTIONS"; then
         mount | grep vmhgfs-fuse
     else
         false
@@ -63,7 +63,7 @@ function do_unmount_all() {
     if [[ "${#MOUNTED[@]}" -ge 1 ]]; then
         for share in "${MOUNTED[@]}"; do
             echo "[-] Un-mounting share : $share"
-            umount "$share"
+            sudo umount "$share"
 	    rmdir "$share"
         done
     fi
@@ -72,9 +72,12 @@ function do_unmount_all() {
 if [[ -z "$1" ]]; then
     list_mount
 elif [[ "$1" = "-a" ]]; then
+    sudo -v
     do_mount_all
 elif [[ "$1" = "-u" ]]; then
+    sudo -v
     do_unmount_all
 else
+    sudo -v
     do_mount "$1"
 fi
