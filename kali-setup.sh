@@ -97,7 +97,8 @@ function kali_setup() {
     go get -u -v github.com/google/codesearch/cmd/cgrep
     # - nifty
     go get -u -v github.com/ffuf/ffuf
-    go get -u -v github.com/tomnomnom/gf
+    # New go needs this or we dont have an easy path to the ~/go/src/ bits
+    GO111MODULE=off go get -u -v github.com/tomnomnom/gf
     GO111MODULE=on go get -u -v github.com/lc/gau
     echo ""
 
