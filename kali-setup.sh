@@ -57,6 +57,9 @@ function kali_setup() {
         python3-curtsies python3-cwcwidth python3-watchdog
     echo ""
 
+    # Lets source the updated ZSH profile for useful paths, etc.
+    source .zshrc
+
     # Refresh our credential cache timeout for another 15mins
     sudo -v
 
@@ -74,7 +77,8 @@ function kali_setup() {
     curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o src/get-pip.py && python src/get-pip.py
     # - Install pip modules for Python3
     python3 -m pip config --user set global.upgrade-strategy eager
-    python3 -m pip install --user stegoveritas black xortool enum34==1.1.8 pwntools
+    python3 -m pip install --user \
+        stegoveritas black xortool enum34==1.1.8 pwntools unicorn
     /home/kali/.local/bin/stegoveritas_install_deps
     echo ""
 
@@ -122,7 +126,7 @@ function kali_setup() {
     echo "[[ Github projects - xssmap ]]"
     (cd src && git clone https://github.com/Jewel591/xssmap.git)
     echo "[[ Github projects - carlospolop - linPEAS.sh ]]"
-    (cd src && http -dF https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh)
+    (cd src && http --body -dF https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh)
     echo "[[ Github projects - Volatility ]]"
     # - Volatility (not v3) : eg. python vol.py -f <imagepath> windows.info
     (cd src && git clone https://github.com/volatilityfoundation/volatility.git)
