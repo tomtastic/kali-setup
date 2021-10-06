@@ -59,6 +59,7 @@ function kali_setup() {
 
     # Lets source the updated ZSH profile for useful paths, etc.
     source .zshrc
+    unset PYTHONPATH
 
     # Refresh our credential cache timeout for another 15mins
     sudo -v
@@ -78,7 +79,7 @@ function kali_setup() {
     # - Install pip modules for Python3
     python3 -m pip config --user set global.upgrade-strategy eager
     python3 -m pip install --user \
-        stegoveritas black xortool enum34==1.1.8 pwntools unicorn
+        stegoveritas black xortool enum34==1.1.8 pwntools
     /home/kali/.local/bin/stegoveritas_install_deps
     echo ""
 
@@ -162,6 +163,8 @@ function kali_setup() {
     echo "[[ Fix broken things ]]"
     # pwndbg installs enum34==1.10.0, which is broken, so reinstall a good version
     python3 -m pip install --user enum34==1.1.8
+    # pwntools thinks it requires unicorn<1.0.2rc4,>=1.0.2rc1, but we dont care.
+    python3 -m pip install --user unicorn
     echo ""
 }
 
