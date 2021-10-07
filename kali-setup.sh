@@ -100,6 +100,8 @@ function kali_setup() {
     # New go needs this or we dont have an easy path to the ~/go/src/ bits
     GO111MODULE=off go get -u -v github.com/tomnomnom/gf
     GO111MODULE=on go get -u -v github.com/lc/gau
+    # Port forwarding over HTTP!
+    go get -v github.com/jpillora/chisel
     echo ""
 
     # Refresh our credential cache timeout for another 15mins
@@ -158,7 +160,7 @@ function kali_setup() {
     echo "[[ Handy symlinks ]]"
     ln -s /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt ~/med
     ln -s /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt ~/rock
-    ln -s ~/.tmux/tmux.conf .tmux.conf
+    rm -f ~/.tmux.conf; ln -s ~/src/tmux.conf .tmux.conf
     echo ""
 
     echo "[[ Fix broken things ]]"
