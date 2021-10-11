@@ -157,8 +157,8 @@ function kali_setup() {
     mkdir /tmp/unstuff && cd /tmp/unstuff && http -dF http://mirror.sobukus.de/files/grimoire/z-archive/stuffit520.611linux-i386.tar.gz
     tar -xzf stuffit520.611linux-i386.tar.gz
     sudo cp bin/unstuff /usr/local/bin/
+    sudo rm /usr/local/bin/binwalk
     cd /tmp && rm -rf unstuff
-    cd ~kali || exit
     echo ""
 
     echo "[[ Handy symlinks ]]"
