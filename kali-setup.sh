@@ -58,7 +58,7 @@ function kali_setup() {
         cabextract default-jdk default-jdk-headless firmware-mod-kit lhasa \
         libice-dev liblhasa0 liblzma-dev liblzo2-dev libpthread-stubs0-dev \
         libsm-dev libx11-dev libxau-dev libxcb1-dev libxdmcp-dev libxt-dev \
-        lzop x11proto-dev xorg-sgml-doctools xtrans-dev
+        lzop x11proto-dev xorg-sgml-doctools xtrans-dev qsstv
     echo ""
 
     # Lets source the updated ZSH profile for useful paths, etc.
