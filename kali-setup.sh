@@ -54,7 +54,12 @@ function kali_setup() {
         powershell python3-dev python3-pip python3-setuptools redis-tools \
         rlwrap steghide sslsniff tmux zsh-syntax-highlighting \
         bpython python3-argcomplete python3-argh python3-blessings \
-        python3-curtsies python3-cwcwidth python3-watchdog
+        python3-curtsies python3-cwcwidth python3-watchdog \
+        cabextract default-jdk default-jdk-headless firmware-mod-kit lhasa \
+        libice-dev liblhasa0 liblzma-dev liblzo2-dev libpthread-stubs0-dev \
+        libsm-dev libx11-dev libxau-dev libxcb1-dev libxdmcp-dev libxt-dev \
+        lzop openjdk-11-jdk openjdk-11-jdk-headless x11proto-dev \
+        xorg-sgml-doctools xtrans-dev
     echo ""
 
     # Lets source the updated ZSH profile for useful paths, etc.
