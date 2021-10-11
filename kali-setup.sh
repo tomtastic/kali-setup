@@ -58,8 +58,7 @@ function kali_setup() {
         cabextract default-jdk default-jdk-headless firmware-mod-kit lhasa \
         libice-dev liblhasa0 liblzma-dev liblzo2-dev libpthread-stubs0-dev \
         libsm-dev libx11-dev libxau-dev libxcb1-dev libxdmcp-dev libxt-dev \
-        lzop openjdk-11-jdk openjdk-11-jdk-headless x11proto-dev \
-        xorg-sgml-doctools xtrans-dev
+        lzop x11proto-dev xorg-sgml-doctools xtrans-dev
     echo ""
 
     # Lets source the updated ZSH profile for useful paths, etc.
@@ -179,7 +178,8 @@ function bgtask_apt() {
     # Refresh our credential cache timeout for another 15mins
     sudo -v
     echo "[[ Backgrounded : Installing larger packages ]]"
-    sudo DEBIAN_FRONTEND=noninteractive apt install -y -q --no-install-recommends nodejs npm seclists
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y -q --no-install-recommends \
+        nodejs npm seclists openjdk-11-jre openjdk-11-jdk
     sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/ 2>/dev/null
 }
 
