@@ -48,17 +48,18 @@ function kali_setup() {
         libgdbm-dev libgdiplus libglib2.0-dev libc6-dbg libgmp3-dev \
         libimage-exiftool-perl libmcrypt4 libmhash2 libmime-charset-perl \
         libmpc-dev libposix-strptime-perl libreadline-dev libsombok3 libssl-dev \
-        libunicode-linebreak-perl \
+        libunicode-linebreak-perl nmap subversion tmux-plugin-manager \
         ack aptitude cargo console-data console-setup evolution fonts-powerline \
         foremost gdb git gobuster golang httpie jq keyboard-configuration \
         powershell python3-dev python3-pip python3-setuptools redis-tools \
-        rlwrap steghide sslsniff tmux zsh-syntax-highlighting \
+        rlwrap steghide sslsniff tmux zsh-syntax-highlighting kali-defaults \
         bpython python3-argcomplete python3-argh python3-blessings \
-        python3-curtsies python3-cwcwidth python3-watchdog \
+        python3-curtsies python3-cwcwidth python3-watchdog ruby ruby-rubygems \
         cabextract default-jdk default-jdk-headless firmware-mod-kit lhasa \
         libice-dev liblhasa0 liblzma-dev liblzo2-dev libpthread-stubs0-dev \
         libsm-dev libx11-dev libxau-dev libxcb1-dev libxdmcp-dev libxt-dev \
         lzop x11proto-dev xorg-sgml-doctools xtrans-dev qsstv qtbase5-dev
+    sudo DEBIAN_FRONTEND=noninteractive apt --fix-broken install -y
     echo ""
 
     # Lets source the updated ZSH profile for useful paths, etc.
@@ -178,6 +179,7 @@ function bgtask_apt() {
     # Refresh our credential cache timeout for another 15mins
     sudo -v
     echo "[[ Backgrounded : Installing larger packages ]]"
+    sudo DEBIAN_FRONTEND=noninteractive apt --fix-broken install -y
     sudo DEBIAN_FRONTEND=noninteractive apt install -y -q --no-install-recommends \
         nodejs npm seclists openjdk-11-jre openjdk-11-jdk
     sudo tar -xzf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/seclists/Passwords/Leaked-Databases/ 2>/dev/null
