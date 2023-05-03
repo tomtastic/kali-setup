@@ -28,3 +28,6 @@ local$ ssh -t kali "curl https://github.com/tomtastic/kali-setup/archive/refs/he
 - extracts rockyou.txt
 - install node packages
 - install rust packages (via cargo)
+
+### TODO
+- Maybe incorporate https://github.com/Dewalt-arch/pimpmykali ?
